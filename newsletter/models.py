@@ -103,6 +103,7 @@ class Newsletter(models.Model):
     class Meta:
         verbose_name = _('newsletter')
         verbose_name_plural = _('newsletters')
+        ordering = ("title",)
 
     def get_absolute_url(self):
         return reverse('newsletter_detail', kwargs={'newsletter_slug': self.slug})

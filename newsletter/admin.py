@@ -392,8 +392,7 @@ class SubscriptionAdmin(NewsletterAdminLinkMixin, ExtendibleModelAdminMixin,
         'newsletter', 'subscribed', 'unsubscribed', 'subscribe_date'
     )
     search_fields = (
-        'name_field', 'email_field', 'user__first_name', 'user__last_name',
-        'user__email'
+        'name_field', 'email_field', 'user__username', 'user__email'
     )
     readonly_fields = (
         'ip', 'subscribe_date', 'unsubscribe_date', 'activation_code'
