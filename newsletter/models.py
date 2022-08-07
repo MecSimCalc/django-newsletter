@@ -575,7 +575,11 @@ class Submission(models.Model):
         }
 
     def submit(self):
-        subscriptions = self.subscriptions.filter(subscribed=True)
+        # https://github.com/jazzband/django-newsletter/pull/110/files
+        if self.subscriptions.all().count() == 0:
+            subscriptions = self.newsletter.subscription_set.filter(subscribed=True)
+        else:
+            subscriptions = self.subscriptions.filter(subscribed=True)
 
         logger.info(
             gettext("Submitting %(submission)s to %(count)d people"),

@@ -127,7 +127,7 @@ class NewsletterListView(NewsletterViewBase, ListView):
                 # Everything's allright, let's save
                 formset.save()
 
-                messages.info(request, gettext("Your changes have been saved."))
+                print("Your changes have been saved.")
 
             except ValidationError:
                 # Invalid form posted. As there is no way for a user to

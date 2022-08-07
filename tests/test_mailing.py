@@ -171,6 +171,29 @@ class CreateSubmissionTestCase(MailingTestCase):
         subscriptions = sub.subscriptions.all()
         self.assertEqual(list(subscriptions), [self.s2])
 
+    def test_submitsubmission_with_empty_list(self):
+        """ Test submission with empty subscription list. """
+
+        self.sub.prepared = True
+        self.sub.publish_date = now() - timedelta(seconds=1)
+        self.sub.subscriptions.clear()
+        self.sub.save()
+
+        Submission.submit_queue()
+
+        # Get the object fresh from DB, as to assure no caching takes place
+        submission = Submission.objects.get(pk=self.sub.pk)
+
+        self.assert_(submission.sent)
+        self.assertFalse(submission.sending)
+
+        # Make sure mail is being sent out
+        self.assertEquals(len(mail.outbox), 1)
+
+        # Make sure a submission contains the title and unsubscribe URL
+        self.assertEmailContains(submission.message.title)
+        self.assertEmailContains(submission.newsletter.unsubscribe_url())
+
 
 class SubmitSubmissionTestCase(MailingTestCase):
     def setUp(self):
