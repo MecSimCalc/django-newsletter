@@ -2,6 +2,7 @@ import logging
 import os
 import time
 from datetime import datetime
+import requests
 
 import django
 
@@ -631,8 +632,24 @@ class Submission(models.Model):
 
         attachments = Attachment.objects.filter(message_id=self.message.id)
 
+        # for attachment in attachments:
+        #     message.attach_file(attachment.file.path)
         for attachment in attachments:
-            message.attach_file(attachment.file.path)
+            filename = os.path.basename(attachment.file.name)
+            path = os.path.join("/tmp", filename)
+            
+            # Download file if it does not already exist
+            if not os.path.exists(path):
+                response = requests.get(attachment.file.url, stream=True, timeout=120)
+                if response.status_code == 200:
+                    with open(path, 'wb') as temp_file:
+                        for chunk in response.iter_content(chunk_size=8192):
+                            temp_file.write(chunk)
+                else:
+                    print(f"Failed to download file from {attachment.file.url}, status code: {response.status_code}")
+            # Attach the file using its absolute path
+            message.attach_file(path)
+
 
         if self.message.html_template:
             message.attach_alternative(

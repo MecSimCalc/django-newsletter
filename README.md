@@ -87,6 +87,28 @@ Sets subscription to newsletters for signed in user.
 
 - When importing Users by uploading a CSV file, it will first check to see if the email address exists for a User object. If it does, it will link it by a ForeignKey.
 
+## 5. Added support for attachments in s3 django backends
+
+In [models.py](newsletter/models.py), `attachment.file.path` will throw an error in s3 backends since `.path` is not supported!
+
+```python
+for attachment in attachments:
+    message.attach_file(attachment.file.path)
+```
+
+Error:
+
+```bash
+raise NotImplementedError("This backend doesn't support absolute paths.")
+NotImplementedError: This backend doesn't support absolute paths.
+```
+
+Fix: download file from s3 url into `/tmp` file and use that as the filepath
+
+---
+
+---
+
 # What is it?
 
 Django app for managing multiple mass-mailing lists with both plaintext as
